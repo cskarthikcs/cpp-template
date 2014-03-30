@@ -1,0 +1,4 @@
+# This file is gitignored.
+Box = "precise32"
+BoxUrl = "http://files.vagrantup.com/precise32.box"
+Hostname = "cpp"
