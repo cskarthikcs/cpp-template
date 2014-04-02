@@ -8,3 +8,5 @@ Quickstart Ubuntu 12.04:
 Header only implementation because this is a coding context, so writing faster is more important than compiling faster.
 
 Based on: <https://github.com/cirosantilli/cpp-template>
+
+All input data must be put under directory `in/`.

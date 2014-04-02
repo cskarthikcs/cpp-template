@@ -1,6 +1,7 @@
 #CXXFLAGS_EXTRA	:= -f --flag
-#LIBS			:= -lboost_graph -lm
+LIBS			:=  -lm -lboost_graph
 # Compile C instead:
 #OUT_EXT		:= .c
+OUT_DIR			:= _build/
 # If you add new targets on Makefile_targets, you might want to add them here:
 #PHONY			:= another-phony
