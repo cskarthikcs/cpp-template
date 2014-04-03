@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 
     {
         // Read graph from file
-        const IndexType NodeNumber = 15 + 1;
+        const IndexType NodeNumber = 15 + 1; // 15 graph nodes + dummy 0 node
         Graph nodes(NodeNumber);
         std::cout << "reading graph" << std::endl;
         Scc::readGraphFromFile("in/scc", nodes);
@@ -152,6 +152,17 @@ int main(int argc, char** argv) {
         for (IndexType i = 0; i < results.size(); i++)
             std::cout << results[i] << ",";
         std::cout << std::endl;
+        
+        
+        // Dijkstra graph
+	    Graph dijkstraGraph(NodeNumber);
+	    Dijkstra::readGraphFromFile("in/dijkstra",dijkstraGraph);
+	    long path = Dijkstra::findShortestPath(dijkstraGraph, 1, 15);
+	    
+	    dijkstraGraph.resetSearchData();
+	
+	    // Run DFS search
+	    dijkstraGraph.totalDFS();
     }
     std::cout << "It works!" << std::endl;
 

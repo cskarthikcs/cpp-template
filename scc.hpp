@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <list>
 #include <map>
@@ -71,6 +72,17 @@ public:
         }
 
         return false;
+    }
+
+    long getEdgeCost(IndexType otherNode)
+    {
+        for (Edges::const_iterator i = m_edgesOut.begin(); i != m_edgesOut.end(); ++i)
+        {
+            if ( i->m_edgeEnd == otherNode )
+                return i->m_edgeCost;
+        }
+
+        return -1; // No edge with given endNode
     }
 
     Edges& getEdges(ExploreDirection direction=Forward)
@@ -189,6 +201,53 @@ public:
 
     }
 
+
+    // Depth First Search for all nodes
+    void totalDFS()
+    {
+        for (IndexType i = 1; i < m_graphData.size(); ++i)
+        {
+            if ( ! m_graphData[i].isExplored() )
+            {
+                std::cout << "Starting DFS with node: " << i << std::endl;
+                singleDFS(m_graphData[i]);
+                std::cout << std::endl;
+
+            }
+        }
+   }
+
+
+    // Depth First Search for single node
+    void singleDFS(Node& startingNode, Node* parentNode = NULL)
+    {
+        startingNode.setExplored(true);
+        if (parentNode == NULL) // Current node is the top most parent (leader)
+        {
+            startingNode.setNodeDepth(0);
+            startingNode.setLeader(&startingNode);
+            std::cout << "Discovered: ";
+        }
+        else
+        {
+            startingNode.setNodeDepth(parentNode->getNodeDepth() + 1);
+            startingNode.setLeader(parentNode);
+        }
+
+        const Edges& currNodeEdges = startingNode.getEdges();
+        for (Edges::const_iterator i = currNodeEdges.begin(); i != currNodeEdges.end(); ++i)
+        {
+            IndexType newNodeIndex = i->m_edgeEnd;
+            Node& nextNode = m_graphData[newNodeIndex];
+            if (! nextNode.isExplored() )
+            {
+                std::cout << newNodeIndex << "(d:" << startingNode.getNodeDepth() + 1 << "),";
+                singleDFS(nextNode, &startingNode);
+
+            }
+        }
+    }
+
     // To make possible another unrelated search, may be not enough if edges were altered (like Scc)
     void resetSearchData()
     {
@@ -205,6 +264,140 @@ private:
     GraphData m_graphData; // Container of graph nodes
 
 };
+
+
+namespace Dijkstra
+{
+
+std::vector<DataType> distance;
+
+void readGraphFromFile(const char* fileName, Graph& nodes)
+{
+    std::ifstream filestream;
+    filestream.open(fileName);
+    int lineNumber = 0;
+
+     if (filestream.is_open())
+     {
+         while (filestream.good() && !filestream.eof())
+         {
+             IndexType startNode = 0;
+             IndexType endNode = 0;
+             DataType edgeCost = 0;
+
+             lineNumber++;
+
+             if (filestream >> startNode)
+             {
+                 if (filestream >> endNode)
+                 {
+                     if (filestream >> edgeCost)
+                     {
+                         nodes.addEdge(startNode,endNode,edgeCost);
+                     }
+                     else
+                         std::cout << "Error reading edge cost at line "  << lineNumber << std::endl;
+                 }
+                else
+                     std::cout << "Error reading end node at line "  << lineNumber<< std::endl;
+             }
+             else
+             {
+                 if (!filestream.eof())
+                    std::cout << "Error reading start node at line "  << lineNumber<< std::endl;
+             }
+
+
+         }
+     }
+
+     std::cout << "Read " << lineNumber << " lines" << std::endl;
+}
+
+
+class PriorityComparer
+{
+public:
+    bool operator () (IndexType elem1,IndexType elem2) const 
+    { 
+	    return distance[elem1] > distance[elem2]; // Bigger distance value gets smaller priority (default comparer is std::less)
+	}
+};
+
+// Dijkstra shortest path algorithm using pririty queue, mostly based on the Wikipedia example
+long findShortestPath(Graph& nodes, IndexType startNode, IndexType endNode)
+{
+    const DataType Infinity = 99999;
+    const DataType Unknown = 0;
+
+    distance.resize(nodes.size());
+    std::vector<DataType> previous(nodes.size());
+
+    for (IndexType i=1; i < distance.size(); ++i)
+    {
+        distance[i] = Infinity;
+        previous[i] = Unknown;
+    }
+
+    distance[startNode] = 0;
+
+    std::priority_queue<IndexType, std::vector<IndexType>, PriorityComparer> priorityQueue;
+
+    priorityQueue.push(startNode);
+
+    while (!priorityQueue.empty())
+    {
+        // Pick the closest node (first in priority queue)
+	    IndexType nextNode = priorityQueue.top();
+        priorityQueue.pop();
+        nodes[nextNode].setExplored(true);
+        
+        if (nextNode == endNode) // Final node found
+        {
+            DataType pathLength = distance[nextNode];
+	        std::cout << "ShortestPath (length:" << pathLength << "): ";
+            std::cout << nextNode;
+            IndexType lastNode = nextNode;
+            while ( (nextNode = previous[nextNode]) != Unknown)
+            {
+                std::cout << "-" << nextNode << "(d:" << nodes[nextNode].getEdgeCost(lastNode) << ")";
+                lastNode = nextNode;
+            }
+            std::cout << std::endl;    
+
+            return pathLength;
+        }
+        else
+        {
+	        // Handle nodes in the neighbourhood, connected through direct edges
+	        Edges& edgesOut = nodes[nextNode].getEdges();
+	    	for (Edges::iterator i = edgesOut.begin(); i != edgesOut.end(); i++)
+        	{
+	        	DataType nodeDistance = distance[nextNode] + nodes[nextNode].getEdgeCost(i->m_edgeEnd);
+	        	
+	        	if ( distance[i->m_edgeEnd] == Infinity) // Node not in the queue yet, add it
+	        	{
+	        		distance[i->m_edgeEnd] = nodeDistance;
+		        	priorityQueue.push(i->m_edgeEnd);
+		        	previous[i->m_edgeEnd] = nextNode;
+        		}
+        		else if ( ! nodes[i->m_edgeEnd].isExplored() ) // Node still in the queue, update its distance if needed
+        		{
+	        		if ( nodeDistance < distance[i->m_edgeEnd] )
+	        		{
+	        			distance[i->m_edgeEnd] = nodeDistance;
+        				previous[i->m_edgeEnd] = nextNode;
+	        		}
+	        				
+	        	}
+	        }
+	    }
+    }
+
+	return -1; // No path found
+}
+
+} // End of namespace Dijkstra
 
 
 namespace Scc
