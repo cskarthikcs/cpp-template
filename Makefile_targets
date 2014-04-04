@@ -1,5 +1,0 @@
-# Called after all.
-# Common application: copy media files that must be on the same directory
-#
-all-post:
-	ln -s ../in "$(OUT_DIR)in"

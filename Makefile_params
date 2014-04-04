@@ -1,4 +1,4 @@
-#CXXFLAGS_EXTRA	:= -f --flag
+CXXFLAGS_EXTRA	:= -Wno-write-strings -Wno-parentheses
 LIBS			:=  -lm -lboost_graph
 # Compile C instead:
 #OUT_EXT		:= .c
