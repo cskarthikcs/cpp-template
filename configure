@@ -18,7 +18,7 @@ elif [ "$distro_id" = "Debian" ]; then
   sudo apt-get install aptitude
   sudo aptitude install -y build-essential
   sudo aptitude install -y g++
-  sudo aptitude install -y libboost1.48-all-dev
+  sudo aptitude install -y libboost1.49-all-dev
 else
   echo 'Automatic dependency installation is not supported on your system.'
   printf 'Dependencies are:

@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
     // Dijkstra graph
     Graph dijkstraGraph(NodeNumber);
     Dijkstra::readGraphFromFile("in/dijkstra",dijkstraGraph);
-    long path = Dijkstra::findShortestPath(dijkstraGraph, 1, 15);
+    //long path = Dijkstra::findShortestPath(dijkstraGraph, 1, 15);
 
     dijkstraGraph.resetSearchData();
 
