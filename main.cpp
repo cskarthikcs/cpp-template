@@ -2,8 +2,8 @@
 #define BOOST 0
 #define SCC 1
 
-//#define LIB BOOST
-#define LIB SCC
+#define LIB BOOST
+//#define LIB SCC
 
 // stdlib headers
 
@@ -84,85 +84,110 @@ int count(int h, int w, int S, image_t &M){
     return count;
 }
 
+// To, Cost, length
+typedef vector<int> edge_t;
+typedef vector<vector<edge_t>> graph_t;
+
+void print_graph(graph_t graph) {
+    printf("A B D C L\n");
+    for(int i = 0; i < graph.size(); ++i) {
+        for(auto& edge : graph[i]) {
+            printf("%d %d %d %d\n", i, edge[0], edge[1], edge[2]);
+        }
+    }
+}
+
 int main(int argc, char** argv) {
-    //ifstream ifs("input/doodle.txt");
-    ifstream ifs("input/min.txt");
-    ofstream ofs("out");
-    int H, W;
-    string line;
-    ifs >> H;
-    ifs >> W;
-    getline(ifs, line);
-    image_t M;
-    vector<string> output;
-    int h = 0;
-    int w = 0;
-    while(getline(ifs, line)){
-        w = 0;
-        line_t M_line;
-        for (char &c : line) {
-            if (c == '.') {
-                M_line.push_back(false);
-                cout << c;
-            } else {
-                M_line.push_back(true);
-                cout << c;
-                // Naive.
-                //output.push_back(to_string(h) + " " + to_string(w));
-            }
-            w++;
-        }
-        M.push_back(M_line);
-        h++;
-        cout << "\n";
-    }
-    //ofs << output.size() << "\n";
-    //for (auto &s : output){
-        //ofs << "PAINTSQ " + s + " 0\n";
-    //}
 
-    int max_row_sum = 0, row_sum;
-    for (auto &row : M) {
-        row_sum = 0;
-        for (auto c : row) {
-            if (c) {
-                row_sum++;
-            }
-        }
-        if (row_sum > max_row_sum) {
-            max_row_sum = row_sum;
-        }
-    }
-    printf("max_row_sum %d\n", max_row_sum);
+    ifstream ifs("input/street.txt");
+    //ifstream ifs("input/street_min.txt");
+    string trash;
+    int N, M, T, C, S, buf;
+    graph_t graph;
 
-    float percent = 0.50f;
-    int S = 1;
-    int area = (2*S + 1) * (2*S + 1);
-    h = S;
-    w = S;
-    cout << "W H " << W << " " << H << endl;
-    for (int h = S; h < H - S; h++) {
-        for (int w = S; w < W - S; w++) {
-            printf("h w %d %d\n", h, w);
-            int c = count(h, w, S, M);
-            printf("count %d\n", c);
-            if (c > area * percent) {
-                output.push_back("PAINTQ " + to_string(h) + " " + to_string(w) + " " + to_string(S) + "\n");
-                for(int i = h - S; i <= h + S; i++){
-                    for(int j = w - S; j <= w + S; j++){
-                        //printf("i j %d %d\n", i, j); cout.flush();
-                        if(!M[i][j]){
-                            output.push_back("ERASECELL " + to_string(i) + " " + to_string(j) + "\n");
-                        }
-                    }
+    ifs >> N;
+    ifs >> M;
+    ifs >> T;
+    ifs >> C;
+    ifs >> S;
+    getline(ifs, trash);
+    printf("N M T C S\n%d %d %d %d %d\n\n", N, M, T, C, S);
+
+    // Latitudes
+    for (int i = 0; i < N; ++i) {
+        getline(ifs, trash);
+    }
+
+    // Edge params
+    //printf("A B D C L\n");
+    graph = graph_t(N);
+    for (int i = 0; i < M; ++i) {
+        int A, B, D, C, L;
+        ifs >> A;
+        ifs >> B;
+        ifs >> D;
+        ifs >> C;
+        ifs >> L;
+        getline(ifs, trash);
+        graph[A].push_back(edge_t{B, C, L});
+        if (D == 2) {
+            graph[B].push_back(edge_t{A, C, L});
+        }
+        //printf("%d %d %d %d %d\n", A, B, D, C, L);
+    }
+
+    int score = 0;
+    while (score < 1500000) {
+        ofstream ofs("out");
+
+        // Random solution
+        map<set<int>, int> visited;
+
+        ofs << C << "\n";
+        srand(time(NULL) + score);
+        for (int i = 0; i < C; i++) {
+            int t = 0;
+            int v = S;
+            int oldV = v;
+            vector<int> path{v};
+            while (t < T - 500) {
+                int d = graph[v].size();
+                int choice = ((rand() % d) + d) % d;
+                if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end()) {
+                    choice = ((rand() % d) + d) % d;
                 }
+                t += graph[v][choice][1];
+                oldV = v;
+                v = graph[v][choice][0];
+                path.push_back(v);
+                visited[set<int>{oldV, v}] = graph[oldV][choice][2];
+            }
+            ofs << path.size() << "\n";
+            for (auto& v : path) {
+                ofs << v << "\n";
             }
         }
-    }
-    ofs << output.size() << "\n";
-    for (auto &s : output) {
-        ofs << s;
+        score = 0;
+        for (auto& pair : visited) {
+            score += pair.second;
+        }
+        cout << "score " << score << endl;
     }
 
-    std::cout << "It works!" << std::endl;
+    //typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, boost::no_property, boost::property<boost::edge_weight_t, int>> graph_t;
+    //typedef boost::graph_traits<graph_t>::vertex_descriptor vertex_descriptor;
+    //typedef boost::graph_traits<graph_t>::edge_descriptor edge_descriptor;
+    //typedef std::pair<int, int> Edge;
+
+    // Model inputs.
+    //const int num_nodes = 5;
+    //Edge edge_array[] = {
+        //{0, 2}, {1, 1}, {1, 3}, {1, 4}, {2, 1},
+        //{2, 3}, {3, 4}, {4, 0}, {4, 1}
+    //};
+    //int weights[] = {
+        //1, 2, 1, 2, 7,
+        //3, 1, 1, 1
+    //};
+    //print_graph(graph);
 }
