@@ -146,11 +146,15 @@ int main(int argc, char** argv) {
         ofs << C << "\n";
         srand(time(NULL) + score);
         for (int i = 0; i < C; i++) {
+            int a = 1000;
             int t = 0;
             int v = S;
             int oldV = v;
             vector<int> path{v};
-            while (t < T - 500) {
+            if (oldV == 4389 && v == 7482) {
+                a = 100;
+            }
+            while (t < T - a) {
                 int d = graph[v].size();
                 int choice = ((rand() % d) + d) % d;
                 if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end()) {
