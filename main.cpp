@@ -40,6 +40,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 
 #if LIB == BOOST
 
@@ -58,6 +59,9 @@
 
 using namespace std;
 
+typedef vector<bool> line_t;
+typedef vector<line_t> image_t;
+
 template <class K, class V>
 std::string map_to_str(std::map<K,V> map) {
     std::stringstream result;
@@ -67,102 +71,98 @@ std::string map_to_str(std::map<K,V> map) {
     return result.str();
 }
 
+int count(int h, int w, int S, image_t &M){
+    int count = 0;
+    for(int i = h - S; i <= h + S; i++){
+        for(int j = w - S; j <= w + S; j++){
+            //printf("i j %d %d\n", i, j); cout.flush();
+            if(M[i][j]){
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
 int main(int argc, char** argv) {
-
-#if LIB == BOOST
-
-    typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, boost::no_property, boost::property<boost::edge_weight_t, int>> graph_t;
-    typedef boost::graph_traits<graph_t>::vertex_descriptor vertex_descriptor;
-    typedef boost::graph_traits<graph_t>::edge_descriptor edge_descriptor;
-    typedef std::pair<int, int> Edge;
-
-    // Model inputs.
-    const int num_nodes = 5;
-    Edge edge_array[] = {
-        {0, 2}, {1, 1}, {1, 3}, {1, 4}, {2, 1},
-        {2, 3}, {3, 4}, {4, 0}, {4, 1}
-    };
-    int weights[] = {
-        1, 2, 1, 2, 7,
-        3, 1, 1, 1
-    };
-
-    // Solve
-    int num_arcs = sizeof(edge_array) / sizeof(Edge);
-    graph_t g(edge_array, edge_array + num_arcs, weights, num_nodes);
-    std::vector<vertex_descriptor> p(num_vertices(g));
-    std::vector<int> d(num_vertices(g));
-    vertex_descriptor s = vertex(0, g);
-    dijkstra_shortest_paths(g, s,
-        predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
-        distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
-
-    // Print solution to stdout.
-    std::cout <<"distances and parents:" <<std::endl;
-    boost::graph_traits<graph_t>::vertex_iterator vi, vend;
-    for (boost::tie(vi, vend) = vertices(g); vi != vend; ++vi) {
-        std::cout << "distance(" << *vi << ") = " << d[*vi] << ", "
-                    << "wparent("  << *vi << ") = " << p[*vi] << std::endl;
+    //ifstream ifs("input/doodle.txt");
+    ifstream ifs("input/min.txt");
+    ofstream ofs("out");
+    int H, W;
+    string line;
+    ifs >> H;
+    ifs >> W;
+    getline(ifs, line);
+    image_t M;
+    vector<string> output;
+    int h = 0;
+    int w = 0;
+    while(getline(ifs, line)){
+        w = 0;
+        line_t M_line;
+        for (char &c : line) {
+            if (c == '.') {
+                M_line.push_back(false);
+                cout << c;
+            } else {
+                M_line.push_back(true);
+                cout << c;
+                // Naive.
+                //output.push_back(to_string(h) + " " + to_string(w));
+            }
+            w++;
+        }
+        M.push_back(M_line);
+        h++;
+        cout << "\n";
     }
-    std::cout <<std::endl;
+    //ofs << output.size() << "\n";
+    //for (auto &s : output){
+        //ofs << "PAINTSQ " + s + " 0\n";
+    //}
 
-    // Generate a .dot graph file with shortest path highlighted.
-    // To png with: dot -Tpng -o outfile.png input.dot
-    boost::property_map<graph_t, boost::edge_weight_t>::type weightmap = get(boost::edge_weight, g);
-    std::ofstream dot_file("dijkstra.dot");
-    dot_file << "digraph D {\n"      << "  rankdir=LR\n"           << "  size=\"4,3\"\n"
-                << "  ratio=\"fill\"\n" << "  edge[style=\"bold\"]\n" << "  node[shape=\"circle\"]\n";
-    boost::graph_traits <graph_t>::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = edges(g); ei != ei_end; ++ei) {
-        edge_descriptor e = *ei;
-        boost::graph_traits<graph_t>::vertex_descriptor
-            u = source(e, g), v = target(e, g);
-        dot_file << u << " -> " << v << "[label=\"" << get(weightmap, e) << "\"";
-        if (p[v] == u)
-            dot_file << ", color=\"black\"";
-        else
-            dot_file << ", color=\"grey\"";
-        dot_file << "]";
+    int max_row_sum = 0, row_sum;
+    for (auto &row : M) {
+        row_sum = 0;
+        for (auto c : row) {
+            if (c) {
+                row_sum++;
+            }
+        }
+        if (row_sum > max_row_sum) {
+            max_row_sum = row_sum;
+        }
     }
-    dot_file << "}";
+    printf("max_row_sum %d\n", max_row_sum);
 
-#elif LIB == SCC
+    float percent = 0.50f;
+    int S = 1;
+    int area = (2*S + 1) * (2*S + 1);
+    h = S;
+    w = S;
+    cout << "W H " << W << " " << H << endl;
+    for (int h = S; h < H - S; h++) {
+        for (int w = S; w < W - S; w++) {
+            printf("h w %d %d\n", h, w);
+            int c = count(h, w, S, M);
+            printf("count %d\n", c);
+            if (c > area * percent) {
+                output.push_back("PAINTQ " + to_string(h) + " " + to_string(w) + " " + to_string(S) + "\n");
+                for(int i = h - S; i <= h + S; i++){
+                    for(int j = w - S; j <= w + S; j++){
+                        //printf("i j %d %d\n", i, j); cout.flush();
+                        if(!M[i][j]){
+                            output.push_back("ERASECELL " + to_string(i) + " " + to_string(j) + "\n");
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ofs << output.size() << "\n";
+    for (auto &s : output) {
+        ofs << s;
+    }
 
-    // Read graph from file
-    const IndexType NodeNumber = 15 + 1; // 15 graph nodes + dummy 0 node
-    Graph nodes(NodeNumber);
-    std::cout << "reading graph" << std::endl;
-    Scc::readGraphFromFile("input/scc", nodes);
-
-    // Run BFS search
-    nodes.totalBFS();
-    nodes.resetSearchData();
-
-    // Run search of Strongly connected components
-    Scc::initIndexMap(NodeNumber);
-    Scc::Results results;
-    results.reserve(1000);
-    Scc::DFS(nodes, results, Backward);
-
-    Scc::translateNodes(nodes);
-    Scc::DFS(nodes,results, Forward);
-
-    std::sort (results.begin(), results.end(), Scc::mySortPred);
-
-    std::cout << "SCC results: ";
-    for (IndexType i = 0; i < results.size(); i++)
-        std::cout << results[i] << ",";
-    std::cout << std::endl;
-
-    // Dijkstra graph
-    Graph dijkstraGraph(NodeNumber);
-    Dijkstra::readGraphFromFile("in/dijkstra",dijkstraGraph);
-    //long path = Dijkstra::findShortestPath(dijkstraGraph, 1, 15);
-
-    dijkstraGraph.resetSearchData();
-
-    // Run DFS search
-    dijkstraGraph.totalDFS();
-#endif
     std::cout << "It works!" << std::endl;
 }
