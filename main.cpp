@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     }
 
     int score = 0;
-    while (score < 1500000) {
+    while (score < 1700000) {
         ofstream ofs("out");
 
         // Random solution
@@ -145,16 +145,16 @@ int main(int argc, char** argv) {
 
         ofs << C << "\n";
         srand(time(NULL) + score);
-        for (int i = 0; i < C; i++) {
+        for (int i = 0; i < C - 2; i++) {
             int a = 1000;
             int t = 0;
             int v = S;
             int oldV = v;
             vector<int> path{v};
-            if (oldV == 4389 && v == 7482) {
-                a = 100;
-            }
             while (t < T - a) {
+                if (oldV == 4389 && v == 7482) {
+                    a = 100;
+                }
                 int d = graph[v].size();
                 int choice = ((rand() % d) + d) % d;
                 if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end()) {
@@ -171,6 +171,258 @@ int main(int argc, char** argv) {
                 ofs << v << "\n";
             }
         }
+
+        // 
+        {
+            int a = 1000;
+            int t = 348;
+            int v = 15;
+            int oldV = v;
+            vector<int> path{
+                4516  ,
+                7281  ,
+                2751  ,
+                2239  ,
+                7075  ,
+                8109  ,
+                9480  ,
+                9224  ,
+                2890  ,
+                4501  ,
+                8399  ,
+                8401  ,
+                5819  ,
+                9855  ,
+                1786  ,
+                4581  ,
+                10057 ,
+                2144  ,
+                6125  ,
+                3611  ,
+                7610  ,
+                5953  ,
+                10241 ,
+                7392  ,
+                9074  ,
+                155   ,
+                3924  ,
+                9098  ,
+                1018  ,
+                3295  ,
+                3625  ,
+                9124  ,
+                5515  ,
+                9544  ,
+                4079  ,
+                1359  ,
+                8147  ,
+                335   ,
+                5141  ,
+                1461  ,
+                9210  ,
+                10278 ,
+                1906  ,
+                15
+            };
+            visited[set<int>{4516    ,    7281    }] = 72;
+            visited[set<int>{7281    ,    2751    }] = 10 ;
+            visited[set<int>{2751    ,    2239    }] = 180;
+            visited[set<int>{2239    ,    7075    }] = 82 ;
+            visited[set<int>{7075    ,    8109    }] = 73 ;
+            visited[set<int>{8109    ,    9480    }] = 44 ;
+            visited[set<int>{9480    ,    9224    }] = 120;
+            visited[set<int>{9224    ,    2890    }] = 133;
+            visited[set<int>{2890    ,    4501    }] = 74 ;
+            visited[set<int>{4501    ,    8399    }] = 96 ;
+            visited[set<int>{8399    ,    8401    }] = 36 ;
+            visited[set<int>{8401    ,    5819    }] = 178;
+            visited[set<int>{5819    ,    9855    }] = 54 ;
+            visited[set<int>{9855    ,    1786    }] = 37 ;
+            visited[set<int>{1786    ,    4581    }] = 32 ;
+            visited[set<int>{4581    ,    10057   }] = 3  ;
+            visited[set<int>{10057   ,    2144    }] = 31 ;
+            visited[set<int>{2144    ,    6125    }] = 77 ;
+            visited[set<int>{6125    ,    3611    }] = 50 ;
+            visited[set<int>{3611    ,    7610    }] = 174;
+            visited[set<int>{7610    ,    5953    }] = 80 ;
+            visited[set<int>{5953    ,    10241   }] = 220;
+            visited[set<int>{10241   ,    7392    }] = 23 ;
+            visited[set<int>{7392    ,    9074    }] = 83 ;
+            visited[set<int>{9074    ,    155     }] = 13 ;
+            visited[set<int>{155     ,    3924    }] = 119;
+            visited[set<int>{3924    ,    9098    }] = 57 ;
+            visited[set<int>{9098    ,    1018    }] = 62 ;
+            visited[set<int>{1018    ,    3295    }] = 44 ;
+            visited[set<int>{3295    ,    3625    }] = 195;
+            visited[set<int>{3625    ,    9124    }] = 15 ;
+            visited[set<int>{9124    ,    5515    }] = 84 ;
+            visited[set<int>{5515    ,    9544    }] = 74 ;
+            visited[set<int>{9544    ,    4079    }] = 73 ;
+            visited[set<int>{4079    ,    1359    }] = 30 ;
+            visited[set<int>{1359    ,    8147    }] = 6  ;
+            visited[set<int>{8147    ,    335     }] = 88 ;
+            visited[set<int>{335     ,    5141    }] = 68 ;
+            visited[set<int>{5141    ,    1461    }] = 60 ;
+            visited[set<int>{1461    ,    9210    }] = 65 ;
+            visited[set<int>{9210    ,    10278   }] = 194;
+            visited[set<int>{10278   ,    1906    }] = 258;
+            visited[set<int>{1906    ,    15      }] = 203;
+            while (t < T - a) {
+                if (oldV == 4389 && v == 7482) {
+                    a = 100;
+                }
+                int d = graph[v].size();
+                int choice = ((rand() % d) + d) % d;
+                if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end()) {
+                    choice = ((rand() % d) + d) % d;
+                }
+                t += graph[v][choice][1];
+                oldV = v;
+                v = graph[v][choice][0];
+                path.push_back(v);
+                visited[set<int>{oldV, v}] = graph[oldV][choice][2];
+            }
+            ofs << path.size() << "\n";
+            for (auto& v : path) {
+                ofs << v << "\n";
+            }
+        }
+
+        // 2
+        {
+            int a = 1000;
+            int t = 399;
+            int v = 42;
+            int oldV = v;
+            vector<int> path{
+4516, 
+7281, 
+2751, 
+2239, 
+7075, 
+8109, 
+9480, 
+9224, 
+2890, 
+4501, 
+8399, 
+8401, 
+5819, 
+9855, 
+1786, 
+4581, 
+10057, 
+2144, 
+6125, 
+3611, 
+7610, 
+5953, 
+10241, 
+7392, 
+9074, 
+155, 
+3924, 
+9098, 
+1018, 
+3295, 
+3625, 
+9124, 
+5515, 
+378, 
+3839, 
+6126, 
+430, 
+7481, 
+9578, 
+4988, 
+6899, 
+2049, 
+1658, 
+2483, 
+9522, 
+876, 
+8780, 
+2700, 
+10336, 
+7727, 
+2359, 
+1555, 
+42
+            };
+            visited[set<int>{4516,           7281,      }] = 72;
+            visited[set<int>{7281,           2751,      }] = 10 ;
+            visited[set<int>{2751,           2239,      }] = 180;
+            visited[set<int>{2239,           7075,      }] = 82 ;
+            visited[set<int>{7075,           8109,      }] = 73 ;
+            visited[set<int>{8109,           9480,      }] = 44 ;
+            visited[set<int>{9480,           9224,      }] = 120;
+            visited[set<int>{9224,           2890,      }] = 133;
+            visited[set<int>{2890,           4501,      }] = 74 ;
+            visited[set<int>{4501,           8399,      }] = 96 ;
+            visited[set<int>{8399,           8401,      }] = 36 ;
+            visited[set<int>{8401,           5819,      }] = 178;
+            visited[set<int>{5819,           9855,      }] = 54 ;
+            visited[set<int>{9855,           1786,      }] = 37 ;
+            visited[set<int>{1786,           4581,      }] = 32 ;
+            visited[set<int>{4581,           10057,     }] = 3  ;
+            visited[set<int>{10057,          2144,      }] = 31 ;
+            visited[set<int>{2144,           6125,      }] = 77 ;
+            visited[set<int>{6125,           3611,      }] = 50 ;
+            visited[set<int>{3611,           7610,      }] = 174;
+            visited[set<int>{7610,           5953,      }] = 80 ;
+            visited[set<int>{5953,           10241,     }] = 220;
+            visited[set<int>{10241,          7392,      }] = 23 ;
+            visited[set<int>{7392,           9074,      }] = 83 ;
+            visited[set<int>{9074,           155,       }] = 13 ;
+            visited[set<int>{155,            3924,      }] = 119;
+            visited[set<int>{3924,           9098,      }] = 57 ;
+            visited[set<int>{9098,           1018,      }] = 62 ;
+            visited[set<int>{1018,           3295,      }] = 44 ;
+            visited[set<int>{3295,           3625,      }] = 195;
+            visited[set<int>{3625,           9124,      }] = 15 ;
+            visited[set<int>{9124,           5515,      }] = 84 ;
+            visited[set<int>{5515,           378,       }] = 120;
+            visited[set<int>{378,            3839,      }] = 21 ;
+            visited[set<int>{3839,           6126,      }] = 19 ;
+            visited[set<int>{6126,           430,       }] = 173;
+            visited[set<int>{430,            7481,      }] = 149;
+            visited[set<int>{7481,           9578,      }] = 78 ;
+            visited[set<int>{9578,           4988,      }] = 59 ;
+            visited[set<int>{4988,           6899,      }] = 64 ;
+            visited[set<int>{6899,           2049,      }] = 114;
+            visited[set<int>{2049,           1658,      }] = 92 ;
+            visited[set<int>{1658,           2483,      }] = 85 ;
+            visited[set<int>{2483,           9522,      }] = 114;
+            visited[set<int>{9522,           876,       }] = 276;
+            visited[set<int>{876,            8780,      }] = 143;
+            visited[set<int>{8780,           2700,      }] = 69 ;
+            visited[set<int>{2700,           10336,     }] = 15 ;
+            visited[set<int>{10336,          7727,      }] = 94 ;
+            visited[set<int>{7727,           2359,      }] = 8  ;
+            visited[set<int>{2359,           1555,      }] = 96 ;
+            visited[set<int>{1555,                  42  }] = 23 ;
+
+            while (t < T - a) {
+                if (oldV == 4389 && v == 7482) {
+                    a = 100;
+                }
+                int d = graph[v].size();
+                int choice = ((rand() % d) + d) % d;
+                if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end()) {
+                    choice = ((rand() % d) + d) % d;
+                }
+                t += graph[v][choice][1];
+                oldV = v;
+                v = graph[v][choice][0];
+                path.push_back(v);
+                visited[set<int>{oldV, v}] = graph[oldV][choice][2];
+            }
+            ofs << path.size() << "\n";
+            for (auto& v : path) {
+                ofs << v << "\n";
+            }
+        }
+
         score = 0;
         for (auto& pair : visited) {
             score += pair.second;
