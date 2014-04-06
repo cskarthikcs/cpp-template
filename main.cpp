@@ -100,7 +100,7 @@ void print_graph(graph_t graph) {
 int func(graph_t& graph,int v,int choice, vector<int>& ratio){
 //	cout<<"Yes"<<endl;	
 	//double frac = 10*graph[v][choice][2]/graph[v][choice][1];
-	double val= (pow(12,graph[graph[v][choice][0]].size() - ratio[graph[v][choice][0]]))*graph[v][choice][2]/graph[v][choice][1];
+	double val= (pow(16,graph[graph[v][choice][0]].size() - ratio[graph[v][choice][0]]))*graph[v][choice][2]/graph[v][choice][1];
 	//cout<<"No"<<endl;	
 	return (int) val;
 //	return pow(2,25 - (double)graph[v][choice][1]/40)*(1-ratio[graph[v][choice][0]]);
