@@ -1,386 +1,125 @@
-// Chose which lib to use:
-#define BOOST 0
-#define SCC 1
-
-#define LIB BOOST
-//#define LIB SCC
-
-// stdlib headers
-
-#include <algorithm>
-#include <chrono>           //time operations
-#include <exception>        //bad_alloc, bad_cast, bad_exception, bad_typeid, ios_base::failure
-#include <fstream>          //ofstream, ifstream, fstream
-#include <functional>       //bind2nd
-#include <iostream>         //cout, endl
-#include <iterator>         //iterator, iterator_traits, input_iterator_tag, advance, next
-#include <list>             //list, forward_list
-#include <limits>           //
-#include <map>              //map, multimap
-#include <memory>           //shared_ptr
-#include <mutex>
-#include <new>              //new
-#include <numeric>          //partial sums, differences on std::vectors of numbers
-#include <regex>
-#include <set>              //set, multiset
-#include <string>           //string
-#include <sstream>          //stringstream
-#include <thread>
-#include <typeinfo>         //typeid, bad_typeid, bad_typecast
-#include <typeindex>        //type_index
-#include <tuple>            //tuple
-#include <unordered_map>    //unordered_map, unordered_multimap
-#include <utility>          //pair, forward, type_info, size_t
-#include <vector>
-#include <valarray>
-
-// C headers:
-
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
-
-#if LIB == BOOST
-
-// Boost 1.48
-#include <boost/config.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/property_map/property_map.hpp>
-#include <boost/property_map/property_map.hpp>
-
-#elif LIB == SCC
-// Conflicts with boost Graph
-#include "scc.hpp"
-#endif
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<math.h>
+#include<list>
+#include<vector>
+#include <sstream>
+#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 using namespace std;
 
-typedef vector<bool> line_t;
-typedef vector<line_t> image_t;
-
-template <class K, class V>
-std::string map_to_str(std::map<K,V> map) {
-    std::stringstream result;
-    for (auto& pair : map) {
-        result << pair.first << ":" << pair.second << ", ";
-    }
-    return result.str();
+void print (vector<vector <int> >& B ){
+	for(long long int x=0;x<B.size();x++){	
+		for(int y=0;y<B[x].size();y++){
+			cout<<B[x][y]<<" ";			
+		}		
+		cout<<endl;
+	}
 }
 
-
-int count(int h, int w, int S, image_t &M){
-    int count = 0;
-    for(int i = h - S; i <= h + S; i++){
-        for(int j = w - S; j <= w + S; j++){
-            //printf("i j %d %d\n", i, j); cout.flush();
-            if(M[i][j]){
-                count++;
-            }
-        }
-    }
-    return count;
+void print (vector <int> & B ){
+		for(int y=0;y<B.size();y++){
+			cout<<B[y]<<" ";			
+		}		
+		cout<<endl;
 }
 
-// To, Cost, length
-typedef vector<int> edge_t;
-typedef vector<vector<edge_t>> graph_t;
-
-void print_graph(graph_t graph) {
-    printf("A B D C L\n");
-    for(int i = 0; i < graph.size(); ++i) {
-        for(auto& edge : graph[i]) {
-            printf("%d %d %d %d\n", i, edge[0], edge[1], edge[2]);
-        }
-    }
-}
-int exists(map<set<int>, int>& visited, int v1, int v2){
-if (visited.find(set<int>{v1,v2}) != visited.end() )
-    return 0;
-else
-    return 1;
-}
-
-int func(graph_t& graph,int v,int choice, vector<int>& ratio, int t, int car, map<set<int>, int>& visited) {
-    int c,c1,c2,id;
-    if(t>45000)
-    {c=1;c1=1;c2=1;id=0;
-    }
-    else {
-        c=100;c1=100;c2=1;id=0;
-    }
-double m=0; 
-       double sum =graph[graph[v][choice][0]].size() - ratio[graph[v][choice][0]];// + id*(graph[v][choice][2]/(graph[v][choice][1]))*exists(visited,v,graph[v][choice][0]);
-    //    double sum=1;
-        int u = graph[v][choice][0];
-    for (int i = 0; i < graph[u].size(); ++i) {
-            if (graph[u][i][0] == v)
-                continue;
-            double val = graph[graph[u][i][0]].size() - ratio[graph[u][i][0]];//)) + id*(graph[u][i][2]/(graph[u].size()*(graph[u][i][1])))*exists(visited,u,graph[u][i][0]);
-	if (val>m){m=val;}
-        }
-    sum+=m;m=0;
-        for (int j=0;j<graph[u].size();j++){
-        int x = graph[u][j][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (graph[x][i][0] == v || graph[x][i][0] == u)
-                continue;
-            double val =graph[graph[x][i][0]].size() - ratio[graph[x][i][0]];//))/(graph[x].size()*graph[u].size())  + id*(graph[x][i][2]/(graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);
-        	if (val>m){m=val;}}
-    }sum+=m;m=0;
-        for(int k=0;k<graph[u].size();k++){
-            int y=graph[u][k][0];
-        for (int j=0;j<graph[y].size();j++){
-        int x = graph[y][j][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (//graph[x][i][0] == v || 
-graph[x][i][0] == u || graph[x][i][0] == y )
-                continue;
-            double val=graph[graph[x][i][0]].size() - ratio[graph[x][i][0]];//))/(graph[y].size()*graph[x].size()*graph[u].size())  + id*(graph[x][i][2]/(graph[y].size()*graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);        	
-if (val>m){m=val;}
-        }}
-    }
-    sum+=m;m=0;
-sum=pow(4,sum);
-double max=0;
-/*    for(int l=0;l<graph[u].size();l++){
-        int z=graph[u][l][0];
-    for(int k=0;k<graph[z].size();k++){
-           int y=graph[z][k][0];
-     for (int j=0;j<graph[y].size();j++){
-        int x = graph[z][k][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (//graph[x][i][0] == v || graph[x][i][0] == u || 
-		graph[x][i][0] == y 
-            || graph[x][i][0] == z )
-                continue;
-        //	sum +=c2*pow(4,(1+graph[graph[x][i][0]].size() - ratio[graph[x][i][0]]))/(graph[z].size()*graph[y].size()*graph[x].size()*graph[u].size()) ;// + id*(graph[x][i][2]/(graph[z].size()*graph[y].size()*graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);
-
-            double val=pow(pow(graph[v][choice][2]/graph[v][choice][1],exists(visited, v, graph[v][choice][0]))*pow(graph[u][l][2]/graph[u][l][1],exists(visited, u, graph[u][l][0]))*
-            pow(graph[z][k][2]/graph[z][k][1],exists(visited, z, graph[z][k][0]))*
-            pow(graph[y][j][2]/graph[y][j][1],exists(visited, y, graph[y][j][0]))*
-            pow(graph[x][i][2]/graph[x][i][1],exists(visited, x, graph[x][i][0])),0.3);
-      if(val>max){val=max;} 
- }}
-    }
-    }
-*/sum+=max;
-    //	if(sum<0)
-    //		sum= 0x11111111;
-        return sum;
+bool cover(vector< vector <int> >& B,vector<vector <int> >& A,int val){
+	for(int i=0;i<B.size();i++){
+		bool flag=false; 
+		for(int j=0;j<A.size();j++){
+			int b=0,a=0,count=0;
+			while(1<2){
+				if(B[i][b]==A[j][a]){
+					b++;
+					a++;
+					count++;
+				} else {
+					if(B[i][b]>A[j][a])
+						b++;
+					else
+						a++;
+				}
+				if(a>=2*val||b>=2*val)
+					break;
+			}
+			if(count==val){
+				flag=true;
+				break;
+			}	
+		}
+		if(flag==false)
+			return false;
+	}
+	return true;
 }
 
-void getratio(graph_t& graph, map<set<int>, int>& visited, vector<int>& output) {
-    for(int i = 0; i < graph.size(); ++i) {
-        int visited_count = 0;
-        for(auto& edge : graph[i]) {
-            if(visited.find(set<int>{i, edge[0]}) != visited.end()) {
-                visited_count++;
-            }
-        }
-//	cout<<"Yes"<<endl;	
-        output.push_back(visited_count);
-//	cout<<"No"<<endl;	
-    }//Normal(output);
-}
-
-int main(int argc, char** argv) {
-	int smart=0, dumb=0;
-    ifstream ifs("input/street.txt");
-    string trash;
-    int N, M, T, C, S, buf;
-    graph_t graph;
-
-    ifs >> N;
-    ifs >> M;
-    ifs >> T;
-    ifs >> C;
-    ifs >> S;
-    getline(ifs, trash);
-    printf("N M T C S\n%d %d %d %d %d\n\n", N, M, T, C, S);
-
-    // Latitudes
-    for (int i = 0; i < N; ++i) {
-        getline(ifs, trash);
+void subset(int arr[], int size, int left, int index, list<int> &l, vector<vector <int> > &B, int n, bool &flag){
+    if(left==0){
+	vector< vector <int> > A;
+	for(list<int>::iterator it=l.begin(); it!=l.end() ; ++it)
+		A.push_back(B[*it]);
+	if(cover(B,A,n)==true){
+		string s = SSTR(n) + ".txt";
+		ofstream f(s.c_str());
+		for(int r=0;r<A.size();r++){
+			for(int j=0;j<A[r].size();j++){
+				f<<A[r][j]<<" ";
+			}	
+			f<<endl;				
+		}
+		f.close();
+		flag=true;
+	}		
+	A.clear();
+	return;
     }
-
-    // Edge params
-    //printf("A B D C L\n");
-    graph = graph_t(N);
-    for (int i = 0; i < M; ++i) {
-        int A, B, D, C, L;
-        ifs >> A;
-        ifs >> B;
-        ifs >> D;
-        ifs >> C;
-        ifs >> L;
-        getline(ifs, trash);
-        graph[A].push_back(edge_t{B, C, L});
-        if (D == 2) {
-            graph[B].push_back(edge_t{A, C, L});
-        }
-        //printf("%d %d %d %d %d\n", A, B, D, C, L);
+    if(flag==true)
+	return;
+    for(int i=index; i<size;i++){
+        l.push_back(arr[i]);
+        subset(arr,size,left-1,i+1,l,B,n,flag);
+        l.pop_back();
     }
-	
-    int score = 0;
-    int max_score = 0;
-    while (score < 2000000) {
-        ofstream ofs("out");
-        vector<int> ratio(graph.size());
-        // Random solution
-        map<set<int>, int> visited;
+}     
 
-        ofs << C << "\n";
-        srand(time(NULL) + score);
-//cout<<func(graph,0,0);
-//cout<<"hi"<<endl;
-//goes to 46
-
-        for (int car = 0; car < C; ++car) {
-            int a = 1000;
-            int t = 0;
-            int v = 4516;
-            int oldV = v;
-            vector<int> path{v};
-            getratio(graph,visited,ratio);
-
-            while (t < T - a) {
-                if (oldV == 4389 && v == 7482) {
-                    a = 100;
-                }
-                int d = graph[v].size();
-
-                vector<int> bias(d);
-                int sum=0;
-                int pos=0,max=0;
-                for(int i = 0; i < d; ++i) {
-                    bias[i]=func(graph,v,i,ratio,t,car,visited);
-		    	if(bias[i]<1)
-				bias[i]=1;
-                    sum += bias[i];
-                    if(max<bias[i]){max=bias[i];pos=i;}
-                    
-                }//cout<<"sum = "<<sum<<endl;
-
-                int rv = (rand() % sum);
-                int rsum = 0;
-
-                int choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {smart++;
-                        choice = i;//cout<<"Yes";
-			//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-/*
-                    if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end() ) {
-  rv = (rand() % sum);
-                 rsum = 0;
-
-                choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {
-                        choice = i;//cout<<"Yes";
-			//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-
-    if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end() ) {
-  rv = (rand() % sum);
-                 rsum = 0;
-
-                choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {
-                        choice = i;//cout<<"Yes";
-    		//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-             
-		//	if((rand()%2==0)){dumb++;
-          //              choice = ((rand() % d) + d) % d;//cout<<"No"<<endl;//}
-		//	else cout<<"Neither"<<endl;
-                //    }
-                    
-                    }}
-*/	
-if(choice!=pos){
-    
-    rv = (rand() % sum);
-                 rsum = 0;
-
-                choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {
-                        choice = i;//cout<<"Yes";
-    		//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-
-}
-
-//choice=pos;
-t += graph[v][choice][1];
-                oldV = v;
-
-                v = graph[v][choice][0];
-                ratio[v]++;
-		if(ratio[v]>graph[v].size())
-			ratio[v]=graph[v].size();
-		path.push_back(v);
-                visited[set<int>{oldV, v}] = graph[oldV][choice][2];
-            }
-            ofs << path.size() << "\n";
-            for (auto& v : path) {
-                ofs << v << "\n";
-            }
-        }
-
-        score = 0;
-        for (auto& pair : visited) {
-            score += pair.second;
-        }
-        cout << "score " << score << "   "<<smart<<"/"<<dumb <<endl;smart=0;dumb=0;
-        ofs.close();
-        if (score > max_score) {
-            cout << "==================================================================new best!" << endl;
-            max_score = score;
-            std::ifstream src("out");
-            std::ofstream dst("out_max");
-            dst << src.rdbuf();
-            src.close();
-            dst.close();
-            std::ofstream score_file("score");
-            score_file << score;
-            score_file.close();
-        }
-    }
-
-    //typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS, boost::no_property, boost::property<boost::edge_weight_t, int>> graph_t;
-    //typedef boost::graph_traits<graph_t>::vertex_descriptor vertex_descriptor;
-    //typedef boost::graph_traits<graph_t>::edge_descriptor edge_descriptor;
-    //typedef std::pair<int, int> Edge;
-
-    // Model inputs.
-    //const int num_nodes = 5;
-    //Edge edge_array[] = {
-        //{0, 2}, {1, 1}, {1, 3}, {1, 4}, {2, 1},
-        //{2, 3}, {3, 4}, {4, 0}, {4, 1}
-    //};
-    //int weights[] = {
-        //1, 2, 1, 2, 7,
-        //3, 1, 1, 1
-    //};
-    //print_graph(graph);
+int main(){
+	for(int i=1;i<10;i++){	
+		vector< vector <int> > B;
+		for(long long int j=0;j<pow(2,4*i);j++){
+			long long int temp=j, count=0;			
+			for(int r=4*i -1;r>=0;r--){
+				if(pow(2,r)<=temp){
+					count++;
+					temp-=pow(2,r);
+				}
+			}
+			if(count==2*i){
+				vector<int> A;
+				temp=j;
+				for(int r=4*i -1;r>=0;r--){
+					if(pow(2,r)<=temp){
+						A.push_back(r+1);
+						temp-=pow(2,r);
+					}
+				}
+				B.push_back(A);
+			}
+		}			
+		for(int d=sqrt(i);d<=2*i;d++){
+			cout<<"i="<<i<<" d="<<d<<" |B|="<<B.size()<<endl;
+			vector< vector <int> > pos;	
+			int array[B.size()];
+			for(int r=0;r<B.size();r++)
+				array[r]=r;
+			list<int> lt;
+			bool flag=false;
+			subset(array,B.size(),d,0,lt,B,i,flag);
+			if(flag==true)
+				break;			
+		}	
+	}
+	return 0;
 }
