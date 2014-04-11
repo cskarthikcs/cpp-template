@@ -11,24 +11,24 @@
 using namespace std;
 
 void print (vector<vector <int> >& B ){
-	for(long long int x=0;x<B.size();x++){
+	for(long long int x=0;x<B.size();x++){	
 		for(int y=0;y<B[x].size();y++){
-			cout<<B[x][y]<<" ";
-		}
+			cout<<B[x][y]<<" ";			
+		}		
 		cout<<endl;
 	}
 }
 
 void print (vector <int> & B ){
 		for(int y=0;y<B.size();y++){
-			cout<<B[y]<<" ";
-		}
+			cout<<B[y]<<" ";			
+		}		
 		cout<<endl;
 }
 
 bool cover(vector< vector <int> >& B,vector<vector <int> >& A,int val){
 	for(int i=0;i<B.size();i++){
-		bool flag=false;
+		bool flag=false; 
 		for(int j=0;j<A.size();j++){
 			int b=0,a=0,count=0;
 			while(1<2){
@@ -48,7 +48,7 @@ bool cover(vector< vector <int> >& B,vector<vector <int> >& A,int val){
 			if(count==val){
 				flag=true;
 				break;
-			}
+			}	
 		}
 		if(flag==false)
 			return false;
@@ -67,12 +67,12 @@ void subset(int arr[], int size, int left, int index, list<int> &l, vector<vecto
 		for(int r=0;r<A.size();r++){
 			for(int j=0;j<A[r].size();j++){
 				f<<A[r][j]<<" ";
-			}
-			f<<endl;
+			}	
+			f<<endl;				
 		}
 		f.close();
 		flag=true;
-	}
+	}		
 	A.clear();
 	return;
     }
@@ -83,13 +83,13 @@ void subset(int arr[], int size, int left, int index, list<int> &l, vector<vecto
         subset(arr,size,left-1,i+1,l,B,n,flag);
         l.pop_back();
     }
-}
+}     
 
 int main(){
-	for(int i=1;i<10;i++){
+	for(int i=1;i<10;i++){	
 		vector< vector <int> > B;
 		for(long long int j=0;j<pow(2,4*i);j++){
-			long long int temp=j, count=0;
+			long long int temp=j, count=0;			
 			for(int r=4*i -1;r>=0;r--){
 				if(pow(2,r)<=temp){
 					count++;
@@ -107,20 +107,20 @@ int main(){
 				}
 				B.push_back(A);
 			}
-		}
-        int *array = new int[B.size()];
+		}			
 		for(int d=sqrt(i);d<=2*i;d++){
 			cout<<"i="<<i<<" d="<<d<<" |B|="<<B.size()<<endl;
-			vector< vector <int> > pos;
+			vector< vector <int> > pos;	
+			int *array = new int[B.size()];
 			for(int r=0;r<B.size();r++)
 				array[r]=r;
 			list<int> lt;
 			bool flag=false;
 			subset(array,B.size(),d,0,lt,B,i,flag);
+			delete[] array;
 			if(flag==true)
-				break;
-		}
-		delete[] array;
+				break;			
+		}	
 	}
 	return 0;
 }
