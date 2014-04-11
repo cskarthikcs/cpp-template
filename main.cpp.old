@@ -105,72 +105,32 @@ else
 }
 
 int func(graph_t& graph,int v,int choice, vector<int>& ratio, int t, int car, map<set<int>, int>& visited) {
-    int c,c1,c2,id;
-    if(t>45000)
-    {c=1;c1=1;c2=1;id=0;
-    }
-    else {
-        c=100;c1=100;c2=1;id=0;
-    }
-double m=0; 
-       double sum =graph[graph[v][choice][0]].size() - ratio[graph[v][choice][0]];// + id*(graph[v][choice][2]/(graph[v][choice][1]))*exists(visited,v,graph[v][choice][0]);
-    //    double sum=1;
-        int u = graph[v][choice][0];
-    for (int i = 0; i < graph[u].size(); ++i) {
-            if (graph[u][i][0] == v)
-                continue;
-            double val = graph[graph[u][i][0]].size() - ratio[graph[u][i][0]];//)) + id*(graph[u][i][2]/(graph[u].size()*(graph[u][i][1])))*exists(visited,u,graph[u][i][0]);
-	if (val>m){m=val;}
-        }
-    sum+=m;m=0;
-        for (int j=0;j<graph[u].size();j++){
-        int x = graph[u][j][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (graph[x][i][0] == v || graph[x][i][0] == u)
-                continue;
-            double val =graph[graph[x][i][0]].size() - ratio[graph[x][i][0]];//))/(graph[x].size()*graph[u].size())  + id*(graph[x][i][2]/(graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);
-        	if (val>m){m=val;}}
-    }sum+=m;m=0;
-        for(int k=0;k<graph[u].size();k++){
-            int y=graph[u][k][0];
-        for (int j=0;j<graph[y].size();j++){
-        int x = graph[y][j][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (//graph[x][i][0] == v || 
-graph[x][i][0] == u || graph[x][i][0] == y )
-                continue;
-            double val=graph[graph[x][i][0]].size() - ratio[graph[x][i][0]];//))/(graph[y].size()*graph[x].size()*graph[u].size())  + id*(graph[x][i][2]/(graph[y].size()*graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);        	
-if (val>m){m=val;}
-        }}
-    }
-    sum+=m;m=0;
-sum=pow(4,sum);
-double max=0;
-/*    for(int l=0;l<graph[u].size();l++){
-        int z=graph[u][l][0];
-    for(int k=0;k<graph[z].size();k++){
-           int y=graph[z][k][0];
-     for (int j=0;j<graph[y].size();j++){
-        int x = graph[z][k][0];
-        for (int i = 0; i < graph[x].size(); ++i) {
-            if (//graph[x][i][0] == v || graph[x][i][0] == u || 
-		graph[x][i][0] == y 
-            || graph[x][i][0] == z )
-                continue;
-        //	sum +=c2*pow(4,(1+graph[graph[x][i][0]].size() - ratio[graph[x][i][0]]))/(graph[z].size()*graph[y].size()*graph[x].size()*graph[u].size()) ;// + id*(graph[x][i][2]/(graph[z].size()*graph[y].size()*graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);
+int c,c1,c2,id;
+if(t>45000- ((car/2+1)*4000))
+{c=400;c1=500;c2=600;id=0;
+}
+else {
+    c=600;c1=500;c2=400;id=1;
+}
+	double sum =c*(graph[graph[v][choice][0]].size() - ratio[graph[v][choice][0]]) + id*(graph[v][choice][2]/(graph[v][choice][1]))*exists(visited,v,graph[v][choice][0]);
+    int u = graph[v][choice][0];
+	for (int i = 0; i < graph[u].size(); ++i) {
+	    if (graph[u][i][0] == v)
+	        continue;
+		sum+=c1*(graph[graph[u][i][0]].size() - ratio[graph[u][i][0]])/graph[u].size() + id*(graph[u][i][2]/(graph[u].size()*(graph[u][i][1])))*exists(visited,u,graph[u][i][0]);
+	}
 
-            double val=pow(pow(graph[v][choice][2]/graph[v][choice][1],exists(visited, v, graph[v][choice][0]))*pow(graph[u][l][2]/graph[u][l][1],exists(visited, u, graph[u][l][0]))*
-            pow(graph[z][k][2]/graph[z][k][1],exists(visited, z, graph[z][k][0]))*
-            pow(graph[y][j][2]/graph[y][j][1],exists(visited, y, graph[y][j][0]))*
-            pow(graph[x][i][2]/graph[x][i][1],exists(visited, x, graph[x][i][0])),0.3);
-      if(val>max){val=max;} 
- }}
-    }
-    }
-*/sum+=max;
-    //	if(sum<0)
-    //		sum= 0x11111111;
-        return sum;
+	for (int j=0;j<graph[u].size();j++){
+    int x = graph[u][j][0];
+	for (int i = 0; i < graph[x].size(); ++i) {
+	    if (graph[x][i][0] == v || graph[x][i][0] == u)
+	        continue;
+		sum +=c2*(graph[graph[x][i][0]].size() - ratio[graph[x][i][0]])/(graph[x].size()*graph[u].size())  + id*(graph[x][i][2]/(graph[x].size()*graph[u].size()*(graph[x][i][1])))*exists(visited,x,graph[x][i][0]);
+	}
+}
+	if(sum<0)
+		sum= 0x11111111;
+	return sum;
 }
 
 void getratio(graph_t& graph, map<set<int>, int>& visited, vector<int>& output) {
@@ -202,13 +162,10 @@ int main(int argc, char** argv) {
     getline(ifs, trash);
     printf("N M T C S\n%d %d %d %d %d\n\n", N, M, T, C, S);
 
-    // Latitudes
     for (int i = 0; i < N; ++i) {
         getline(ifs, trash);
     }
 
-    // Edge params
-    //printf("A B D C L\n");
     graph = graph_t(N);
     for (int i = 0; i < M; ++i) {
         int A, B, D, C, L;
@@ -222,7 +179,6 @@ int main(int argc, char** argv) {
         if (D == 2) {
             graph[B].push_back(edge_t{A, C, L});
         }
-        //printf("%d %d %d %d %d\n", A, B, D, C, L);
     }
 	
     int score = 0;
@@ -230,14 +186,9 @@ int main(int argc, char** argv) {
     while (score < 2000000) {
         ofstream ofs("out");
         vector<int> ratio(graph.size());
-        // Random solution
         map<set<int>, int> visited;
-
         ofs << C << "\n";
         srand(time(NULL) + score);
-//cout<<func(graph,0,0);
-//cout<<"hi"<<endl;
-//goes to 46
 
         for (int car = 0; car < C; ++car) {
             int a = 1000;
@@ -255,14 +206,12 @@ int main(int argc, char** argv) {
 
                 vector<int> bias(d);
                 int sum=0;
-                int pos=0,max=0;
+
                 for(int i = 0; i < d; ++i) {
                     bias[i]=func(graph,v,i,ratio,t,car,visited);
 		    	if(bias[i]<1)
 				bias[i]=1;
                     sum += bias[i];
-                    if(max<bias[i]){max=bias[i];pos=i;}
-                    
                 }//cout<<"sum = "<<sum<<endl;
 
                 int rv = (rand() % sum);
@@ -277,7 +226,7 @@ int main(int argc, char** argv) {
                         break;
                     }
                 }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-/*
+
                     if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end() ) {
   rv = (rand() % sum);
                  rsum = 0;
@@ -293,45 +242,12 @@ int main(int argc, char** argv) {
                 }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
 
     if (visited.find(set<int>{v,graph[v][choice][0]}) != visited.end() ) {
-  rv = (rand() % sum);
-                 rsum = 0;
-
-                choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {
-                        choice = i;//cout<<"Yes";
-    		//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-             
-		//	if((rand()%2==0)){dumb++;
-          //              choice = ((rand() % d) + d) % d;//cout<<"No"<<endl;//}
+               
+			if((rand()%15==0)){dumb++;
+                        choice = ((rand() % d) + d) % d;//cout<<"No"<<endl;//}
 		//	else cout<<"Neither"<<endl;
-                //    }
-                    
-                    }}
-*/	
-if(choice!=pos){
-    
-    rv = (rand() % sum);
-                 rsum = 0;
-
-                choice = d - 1;//bool working=false;
-                for (int i = 0; i < d; ++i) {
-                    rsum += bias[i];
-                    if (rv <= rsum) {
-                        choice = i;//cout<<"Yes";
-    		//working=true;
-                        break;
-                    }
-                }//if(working==false){cout<<endl<<rv<<" "<<sum<<endl;exit(0);}
-
-}
-
-//choice=pos;
-t += graph[v][choice][1];
+                    }}}
+		t += graph[v][choice][1];
                 oldV = v;
 
                 v = graph[v][choice][0];
